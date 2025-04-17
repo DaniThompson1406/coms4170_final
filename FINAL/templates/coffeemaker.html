@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Coffee Maker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='data.js') }}"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</head>
+<body onload="initCoffeeMaker()">
+    <div class="top-bar">
+        <a href="{{ url_for('quiz', page=1) }}" class="nav-button">Quiz</a>
+        <h1>Coffee Maker</h1>
+        <a href="{{ url_for('result') }}" class="nav-button">Recipes</a>
+    </div>
+
+    <div class="main-container">
+        <div class="ingredients-panel">
+            <h2>Ingredients</h2>
+            <div id="ingredients" class="ingredients-list">
+                <!-- Ingredients will load here -->
+            </div>
+        </div>
+
+        <div class="workspace" id="workspace" ondrop="dropToWorkspace(event)" ondragover="allowWorkspaceDrop(event)">
+            <h2>Workspace</h2>
+            <div id="workspace-items" class="workspace-items">
+                <!-- Dropped ingredients show here -->
+            </div>
+        </div>
+    </div>
+</body>
+</html>

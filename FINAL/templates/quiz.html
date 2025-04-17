@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head>
+    <title>Quiz</title>
+    <script src="{{ url_for('static', filename='data.js') }}"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</head>
+<body>
+    <h1>Quiz Mode ({{ page }}/8)</h1>
+
+    <h2>Drag the correct base onto the milk!</h2>
+
+    <div id="bases">
+        <div id="base1" class="base" draggable="true" ondragstart="drag(event)">Matcha</div>
+        <div id="base2" class="base" draggable="true" ondragstart="drag(event)">Espresso</div>
+        <div id="base3" class="base" draggable="true" ondragstart="drag(event)">Chai</div>
+    </div>
+
+    <form method="post" onsubmit="return confirm('Are you sure?')">
+        <div id="dropzone" ondrop="drop(event)" ondragover="allowDrop(event)" style="border:1px dashed #000; width:200px; height:100px; margin-top:20px;">
+            Drop here
+        </div>
+        <input type="hidden" name="answer" id="dropped-answer">
+        <br><button type="submit">Submit</button>
+    </form>
+</body>
+</html>
