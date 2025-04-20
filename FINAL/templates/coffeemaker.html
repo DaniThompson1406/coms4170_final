@@ -8,11 +8,20 @@
 </head>
 <body onload="initCoffeeMaker()">
     <div class="top-bar">
-        <a href="{{ url_for('quiz', page=1) }}" class="nav-button">Quiz</a>
+    <button id="quiz-btn" class="nav-button" disabled>Unlock 7 recipes to start quiz</button>
         <h1>Coffee Maker</h1>
-        <a href="{{ url_for('result') }}" class="nav-button">Recipes</a>
+        <a href="{{ url_for('recipes') }}" class="nav-button">Recipes</a>
     </div>
 
+    <div class="whisk-toggle">
+        <img id="whisk-img" src="https://raw.githubusercontent.com/olivia-long127/coms4170_final/9e297d423cab1c01fadea5f7f92af61f5cc22507/FINAL/static/whisk.jpg"
+             alt="Whisk Toggle"
+             class="whisk-icon"
+             onclick="toggleWhisk()" />
+        <span id="whisk-status">Whisk OFF</span>
+    </div>
+
+    
     <div class="main-container">
         <div class="ingredients-panel">
             <h2>Ingredients</h2>
@@ -23,10 +32,21 @@
 
         <div class="workspace" id="workspace" ondrop="dropToWorkspace(event)" ondragover="allowWorkspaceDrop(event)">
             <h2>Workspace</h2>
-            <div id="workspace-items" class="workspace-items">
-                <!-- Dropped ingredients show here -->
-            </div>
+            <div id="workspace-items" class="workspace-items"
+     ondragover="allowWorkspaceDrop(event)"
+     ondrop="repositionInWorkspace(event)">
+</div>
+
         </div>
     </div>
 </body>
 </html>
+
+<script>
+    document.getElementById('quiz-btn').onclick = function () {
+        if (!this.disabled) {
+            window.location.href = "{{ url_for('quiz', page=1) }}";
+        }
+    };
+</script>
+

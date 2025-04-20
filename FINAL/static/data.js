@@ -1,15 +1,17 @@
 // static/data.js
 
 const ingredients = [
-    { name: "Milk"},
-    { name: "Ground Coffee"},
-    { name: "Matcha Powder"},
-    { name: "Steam Wand"},
-    { name: "Hojicha Powder"},
-    { name: "Hot Water"},
-    { name: "Chai Powder"},
-    { name: "Whisk"}
+    { name: "Milk", img: "https://raw.githubusercontent.com/olivia-long127/coms4170_final/9e297d423cab1c01fadea5f7f92af61f5cc22507/FINAL/static/milk.jpg" },
+    { name: "Ground Coffee", img: "https://raw.githubusercontent.com/olivia-long127/coms4170_final/9e297d423cab1c01fadea5f7f92af61f5cc22507/FINAL/static/ground_coffee.jpg"},
+    { name: "Matcha Powder", img: "https://raw.githubusercontent.com/olivia-long127/coms4170_final/9e297d423cab1c01fadea5f7f92af61f5cc22507/FINAL/static/matcha_powder.jpg"},
+    { name: "Steam Wand", img: "https://raw.githubusercontent.com/olivia-long127/coms4170_final/9e297d423cab1c01fadea5f7f92af61f5cc22507/FINAL/static/steam_wand.jpg"},
+    { name: "Hojicha Powder", img: "https://raw.githubusercontent.com/olivia-long127/coms4170_final/9e297d423cab1c01fadea5f7f92af61f5cc22507/FINAL/static/hojicha_powder.jpg"},
+    { name: "Hot Water", img: ""},
+    { name: "Chai Powder", img: "https://raw.githubusercontent.com/olivia-long127/coms4170_final/9e297d423cab1c01fadea5f7f92af61f5cc22507/FINAL/static/chai_powder.jpg"},
+    { name: "Whisk", img: "https://raw.githubusercontent.com/olivia-long127/coms4170_final/9e297d423cab1c01fadea5f7f92af61f5cc22507/FINAL/static/whisk.jpg"}
 ];
+
+
 
 let unlockedRecipes = [];
 const unlockedAll = 7;
@@ -43,22 +45,35 @@ const recipes = [
         dosage: [], hasRecipe: false, isUnlocked: false },
 
     { name: "Macchiato", combo: ["Steamed Milk", "Espresso"], tool: [], 
-        dosage: ["fill in here"], hasRecipe: true, isUnlocked: false, recipe: ["1. fill in here", "2. fill in here"] }, //make sure each item has an associated dosage
+        dosage: ["fill in here"], hasRecipe: true, isUnlocked: false, recipe: ["1. fill in here", "2. fill in here"],
+    img: "" }, //make sure each item has an associated dosage
 
-    { name: "Matcha Latte", combo: ["Matcha Powder", "Steamed Milk", "Hot Water"], tool: ["Whisk"], 
-        dosage: ["3g", "6oz", "2oz"], hasRecipe: true, isUnlocked: false, recipe: ["1. Whisk 3g of matcha powder with 2oz of water.", "2. Combine with 6oz of your favorite milk."] },
+    { name: "Matcha Latte", combo: ["Matcha Tea", "Steamed Milk"], tool: [], 
+        dosage: ["3g", "6oz", "2oz"], hasRecipe: true, isUnlocked: false, recipe: ["1. Whisk 3g of matcha powder with 2oz of water.", "2. Combine with 6oz of your favorite milk."],
+        img: "https://raw.githubusercontent.com/olivia-long127/coms4170_final/9e297d423cab1c01fadea5f7f92af61f5cc22507/FINAL/static/matcha.jpg"},
+
+    { name: "Matcha Tea", combo: ["Matcha Powder", "Hot Water"], tool: ["Whisk"],
+            dosage: ["fill in here"], hasRecipe: false, isUnlocked: false },
 
     { name: "Latte", combo: ["Espresso", "Steamed Milk"], tool: [],
-        dosage: ["36g", "4oz"], hasRecipe: true, isUnlocked: false, recipe: ["1. Pull a shot of espresso with 18g of ground coffee.", "2. Combine with 4oz of your favorite milk."] },
+        dosage: ["36g", "4oz"], hasRecipe: true, isUnlocked: false, recipe: ["1. Pull a shot of espresso with 18g of ground coffee.", "2. Combine with 4oz of your favorite milk."],
+    img: "https://raw.githubusercontent.com/olivia-long127/coms4170_final/9e297d423cab1c01fadea5f7f92af61f5cc22507/FINAL/static/latte_lightest.jpg" },
 
     { name: "Cappuccino", combo: ["Espresso", "Steamed Milk"], tool: [], 
         dosage: ["fill in here"], hasRecipe: true, isUnlocked: false, recipe: ["1. Whisk 3g of hojicha powder with 2oz of water.", "2. Combine with 6oz of your favorite milk."] },
 
-    { name: "Chai Latte", combo: ["Chai Powder", "Steamed Milk", "Hot Water"], tool: ["Whisk"], 
+    { name: "Chai Latte", combo: ["Chai Slurry", "Steamed Milk"], tool: [], 
         dosage: ["fill in here"], hasRecipe: true, isUnlocked: false },
 
-    { name: "Hojicha Latte", combo: ["Hojicha Powder", "Steamed Milk", "Hot Water"], tool: ["Whisk"], 
-        dosage: ["3g", "6oz", "2oz"], hasRecipe: true, isUnlocked: false },
+    { name: "Chai Slurry", combo: ["Chai Powder", "Hot Water"],  tool: ["Whisk"],
+            dosage: ["fill in here"], hasRecipe: false, isUnlocked: false },
+
+    { name: "Hojicha Latte", combo: ["Hojicha Slurry", "Steamed Milk"], tool: [], 
+        dosage: ["3g", "6oz", "2oz"], hasRecipe: true, isUnlocked: false,
+    img: "https://raw.githubusercontent.com/olivia-long127/coms4170_final/9e297d423cab1c01fadea5f7f92af61f5cc22507/FINAL/static/hojicha_light.jpg"},
+
+    { name: "Hojicha Slurry", combo: ["Hojicha Powder", "Hot Water"],  tool: ["Whisk"],
+            dosage: ["fill in here"], hasRecipe: false, isUnlocked: false },
 
     { name: "Flat White", combo: ["Espresso", "Steamed Milk"], tool: [], 
         dosage: ["fill in here"], hasRecipe: true, isUnlocked: false }

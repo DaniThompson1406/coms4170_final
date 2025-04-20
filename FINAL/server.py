@@ -20,9 +20,9 @@ def quiz(page):
         return redirect(url_for('quiz', page=page+1))
     return render_template('quiz.html', page=page)
 
-@app.route('/result')
-def result():
-    return render_template('result.html')
+@app.route('/recipes')
+def recipes():
+    return render_template('recipes.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
