@@ -6,7 +6,7 @@ const ingredients = [
     { name: "Matcha Powder", img: "https://raw.githubusercontent.com/olivia-long127/coms4170_final/9e297d423cab1c01fadea5f7f92af61f5cc22507/FINAL/static/matcha_powder.jpg"},
     { name: "Steam Wand", img: "https://raw.githubusercontent.com/olivia-long127/coms4170_final/9e297d423cab1c01fadea5f7f92af61f5cc22507/FINAL/static/steam_wand.jpg"},
     { name: "Hojicha Powder", img: "https://raw.githubusercontent.com/olivia-long127/coms4170_final/9e297d423cab1c01fadea5f7f92af61f5cc22507/FINAL/static/hojicha_powder.jpg"},
-    { name: "Hot Water", img: ""},
+    { name: "Hot Water", img: "https://github.com/olivia-long127/coms4170_final/blob/main/FINAL/static/hot_water.jpg?raw=true"},
     { name: "Chai Powder", img: "https://raw.githubusercontent.com/olivia-long127/coms4170_final/9e297d423cab1c01fadea5f7f92af61f5cc22507/FINAL/static/chai_powder.jpg"},
     { name: "Whisk", img: "https://raw.githubusercontent.com/olivia-long127/coms4170_final/9e297d423cab1c01fadea5f7f92af61f5cc22507/FINAL/static/whisk.jpg"}
 ];
