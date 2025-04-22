@@ -31,6 +31,7 @@ function initCoffeeMaker() {
         ingredientDiv.appendChild(div);
     });
     updateQuizButton();
+    logUserAction('enter_page', 'coffeemaker');
 }
 
 function allowWorkspaceDrop(ev) {
@@ -132,6 +133,7 @@ function checkForRecipe() {
                     unlockedRecipes.push(recipe.name);
                     localStorage.setItem('unlockedRecipes', JSON.stringify(unlockedRecipes));
                     alert(`🎉 You unlocked a new drink: ${recipe.name}!`);
+                    logUserAction('unlocked_recipe', recipe.name);
                 }
             }
 
@@ -139,6 +141,19 @@ function checkForRecipe() {
             break;
         }
     }
+}
+
+function logUserAction(action, details) {
+    fetch('/log_action', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            action: action,
+            details: details
+        }),
+    });
 }
 
 function updateQuizButton() {
