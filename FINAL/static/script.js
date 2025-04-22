@@ -1,5 +1,4 @@
 let draggedElement = null;
-
 let whiskEnabled = false;
 
 function toggleWhisk() {
@@ -23,7 +22,12 @@ function initCoffeeMaker() {
         div.className = 'ingredient';
         div.draggable = true;
         div.ondragstart = (e) => e.dataTransfer.setData('text', item.name);
-        div.innerHTML = `<img src="${item.img}" alt="${item.name}" class="ingredient-img">`;
+
+        div.innerHTML = `
+            <div class="crop-box">
+                <img src="${item.img}" alt="${item.name}" class="ingredient-img">
+            </div>
+        `;
         ingredientDiv.appendChild(div);
     });
     updateQuizButton();
@@ -46,12 +50,12 @@ function dropToWorkspace(ev) {
     newDiv.dataset.name = ingredientName;
     newDiv.setAttribute("draggable", true);
 
-    // image display
-    newDiv.innerHTML = ingredient.img
-        ? `<img src="${ingredient.img}" alt="${ingredient.name}" class="ingredient-img">`
-        : `<span class="emoji">✨</span><br>${ingredient.name}`;
+    newDiv.innerHTML = `
+        <div class="crop-box">
+            <img src="${ingredient.img}" alt="${ingredient.name}" class="ingredient-img">
+        </div>
+    `;
 
-    // Drag behavior
     newDiv.addEventListener("dragstart", (e) => {
         draggedElement = newDiv;
         e.dataTransfer.effectAllowed = "move";
@@ -74,7 +78,6 @@ function repositionInWorkspace(ev) {
         workspace.appendChild(draggedElement);
         draggedElement = null;
 
-        // ✅ Trigger recipe check after moving
         if (document.querySelectorAll('.workspace-item').length >= 2) {
             checkForRecipe();
         }
@@ -88,33 +91,28 @@ function checkForRecipe() {
     for (let recipe of recipes) {
         const comboMatch = recipe.combo.every(c => workspaceNames.includes(c));
         const toolMatch = !recipe.tool || recipe.tool.every(t => {
-            if (t === "Whisk") {
-                return whiskEnabled;
-            } else {
-                return workspaceNames.includes(t);
-            }
+            if (t === "Whisk") return whiskEnabled;
+            else return workspaceNames.includes(t);
         });
-        
 
         if (comboMatch && toolMatch) {
-            // Remove used ingredients
             const allUsed = recipe.combo.concat(recipe.tool || []);
             for (let name of allUsed) {
                 const el = Array.from(document.querySelectorAll('.workspace-item')).find(item => item.dataset.name === name);
                 if (el) el.remove();
             }
 
-            // Add resulting drink to workspace
             const resultDiv = document.createElement('div');
             resultDiv.className = 'workspace-item';
             resultDiv.dataset.name = recipe.name;
             resultDiv.setAttribute("draggable", true);
 
-            resultDiv.innerHTML = recipe.img
-                ? `<img src="${recipe.img}" alt="${recipe.name}" class="ingredient-img">`
-                : `<span class="emoji">✨</span><br>${recipe.name}`;
+            resultDiv.innerHTML = `
+                <div class="crop-box">
+                    <img src="${recipe.img}" alt="${recipe.name}" class="ingredient-img">
+                </div>
+            `;
 
-            // Drag behavior for result
             resultDiv.addEventListener("dragstart", (e) => {
                 draggedElement = resultDiv;
                 e.dataTransfer.effectAllowed = "move";
@@ -128,7 +126,6 @@ function checkForRecipe() {
 
             document.getElementById('workspace-items').appendChild(resultDiv);
 
-            // Unlock recipe
             if (!recipe.isUnlocked) {
                 recipe.isUnlocked = true;
                 if (!unlockedRecipes.includes(recipe.name)) {
@@ -139,7 +136,7 @@ function checkForRecipe() {
             }
 
             updateQuizButton();
-            break; // only process one recipe at a time
+            break;
         }
     }
 }

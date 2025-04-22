@@ -72,12 +72,26 @@ body {
 }
 
 .ingredient-img {
+    height: 200px;        /* slightly larger than crop box (90px) */
+    object-fit: cover;
+    transform: scale(1.2);  /* zooms ~2px on a 90px box */
+}
+
+.crop-box {
     width: 150px;
     height: 150px;
-    object-fit: contain;
-    border-radius: 0px;
-    display: block;
-    margin: auto;
+    overflow: hidden;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.whisk-toggle-img {
+    height: 200px; /* slightly taller to overflow */
+    object-fit: cover;
+    transform: scale(1.2); /* zoom in to crop ~2px */
 
 }
 
