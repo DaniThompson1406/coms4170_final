@@ -1,27 +1,51 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Quiz</title>
-    <script src="{{ url_for('static', filename='data.js') }}"></script>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <meta charset="UTF-8">
+    <title>Quiz - {{ quizzable.name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
-    <h1>Quiz Mode ({{ page }}/8)</h1>
 
-    <h2>Drag the correct base onto the milk!</h2>
+<body data-score="{{ score }}" data-correct="{{ quizzable.drag }}" data-page="{{ page }}" onload="initDragDrop();">
 
-    <div id="bases">
-        <div id="base1" class="base" draggable="true" ondragstart="drag(event)">Matcha</div>
-        <div id="base2" class="base" draggable="true" ondragstart="drag(event)">Espresso</div>
-        <div id="base3" class="base" draggable="true" ondragstart="drag(event)">Chai</div>
+    <div class="header">
+        <h1>{{ quizzable.name }}</h1>
+        <img src="{{ quizzable.img }}" alt="{{ quizzable.name }}" width="200">
+        <div class="score">
+            Score: <span id="score">{{ score }}</span>
+            <button onclick="skipQuestion()">Skip</button>
+        </div>
     </div>
 
-    <form method="post" onsubmit="return confirm('Are you sure?')">
-        <div id="dropzone" ondrop="drop(event)" ondragover="allowDrop(event)" style="border:1px dashed #000; width:200px; height:100px; margin-top:20px;">
-            Drop here
+    <div class="quiz-container">
+        <div class="left-items">
+            {% for item in quiz_img[:4] %}
+                <img src="{{ item.img }}" alt="{{ item.name }}" class="draggable" draggable="true" data-name="{{ item.name }}">
+            {% endfor %}
         </div>
-        <input type="hidden" name="answer" id="dropped-answer">
-        <br><button type="submit">Submit</button>
-    </form>
+
+        <!-- Removed the Steamed Milk image -->
+        <div class="right-item">
+            <!-- You can add a placeholder or leave this blank -->
+            <div id="milk-target" style="width: 150px; height: 150px; background: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                Drop Here
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden form that appears after correct drag -->
+    <div id="form-section" style="display:none;">
+        <img src="{{ quizzable.img }}" alt="{{ quizzable.name }}" width="200"><br>
+        <form method="POST">
+            {% for i in range(quizzable.qualifier|length) %}
+                <label>{{ quizzable.qualifier[i] }}:</label>
+                <input type="text" name="qualifier_{{ i }}"><br>
+            {% endfor %}
+            <button type="submit">Submit</button>
+            <button type="button" onclick="skipQuestion()">Skip</button>
+        </form>
+    </div>
+
+    <script src="{{ url_for('static', filename='quiz.js') }}"></script>
 </body>
 </html>

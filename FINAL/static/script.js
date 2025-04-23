@@ -143,6 +143,7 @@ function checkForRecipe() {
     }
 }
 
+
 function logUserAction(action, details) {
     fetch('/log_action', {
         method: 'POST',
@@ -166,3 +167,55 @@ function updateQuizButton() {
         btn.innerText = `Unlock ${unlockedAll - unlockedRecipes.length} more to start quiz`;
     }
 }
+
+// quiz.js 
+
+function initDragDrop() {
+    const draggables = document.querySelectorAll('.draggable');
+    const milkTarget = document.getElementById('milk-target');
+
+    const scoreElement = document.getElementById('score');
+    let score = parseInt(document.body.dataset.score);
+    const correctDrag = document.body.dataset.correct;
+    const currentPage = parseInt(document.body.dataset.page);
+
+    // Set dragstart for all draggable images
+    draggables.forEach(item => {
+        item.addEventListener('dragstart', function (e) {
+            e.dataTransfer.setData("text/plain", item.dataset.name);
+        });
+    });
+
+    // Allow drop
+    milkTarget.addEventListener('dragover', function (e) {
+        e.preventDefault();
+    });
+
+    // Handle drop
+    milkTarget.addEventListener('drop', function (e) {
+        e.preventDefault();
+        const draggedName = e.dataTransfer.getData("text/plain");
+        console.log("Dropped:", draggedName, "Correct:", correctDrag);
+
+        if (draggedName === correctDrag) {
+            // Correct drop
+            alert("Correct drop!");
+            document.querySelector('.quiz-container').style.display = 'none';
+            document.getElementById('form-section').style.display = 'block';
+        } else {
+            // Incorrect drop - deduct point
+            score = Math.max(0, score - 1);
+            scoreElement.innerText = score;
+            alert("Incorrect! 1 point deducted.");
+        }
+    });
+
+    // Skip question button
+    window.skipQuestion = function () {
+        score = Math.max(0, score - 1);
+        scoreElement.innerText = score;
+        window.location.href = "/quiz/" + (currentPage + 1);
+    };
+}
+
+    

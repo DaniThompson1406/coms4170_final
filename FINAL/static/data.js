@@ -14,7 +14,7 @@ const ingredients = [
 
 
 let unlockedRecipes = [];
-const unlockedAll = 7;
+const unlockedAll = 0;
 
 /* Notes for Daniel:
 
