@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Coffee Maker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='data.js') }}"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</head>
+<body onload="initCoffeeMaker()">
+    <div class="top-bar">
+    <button id="quiz-btn" class="nav-button" disabled>Unlock 7 recipes to start quiz</button>
+        <h1>Coffee Maker</h1>
+        <a href="{{ url_for('recipes') }}" class="nav-button">Recipes</a>
+    </div>
+    <p><strong>Match ingredients in the workspace!</strong></p>
+
+    <div class="whisk-toggle">
+        <div class="crop-box">
+            <img id="whisk-img"
+                 src="https://raw.githubusercontent.com/olivia-long127/coms4170_final/9e297d423cab1c01fadea5f7f92af61f5cc22507/FINAL/static/whisk.jpg"
+                 alt="Whisk Toggle"
+                 class="whisk-toggle-img"
+                 onclick="toggleWhisk()" />
+        </div>
+        <span id="whisk-status">Whisk OFF</span>
+    </div>
+    
+
+    
+    <div class="main-container">
+        <div class="ingredients-panel">
+            <h2>Ingredients</h2>
+            <div id="ingredients" class="ingredients-list">
+                <!-- Ingredients will load here -->
+            </div>
+        </div>
+
+        <div class="workspace" id="workspace" ondrop="dropToWorkspace(event)" ondragover="allowWorkspaceDrop(event)">
+            <h2>Workspace</h2>
+            <div id="workspace-items" class="workspace-items"
+     ondragover="allowWorkspaceDrop(event)"
+     ondrop="repositionInWorkspace(event)">
+</div>
+
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+    document.getElementById('quiz-btn').onclick = function () {
+        if (!this.disabled) {
+            window.location.href = "{{ url_for('quiz', page=1) }}";
+        }
+    };
+</script>
+
