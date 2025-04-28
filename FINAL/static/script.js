@@ -1,19 +1,4 @@
 let draggedElement = null;
-let whiskEnabled = false;
-
-function toggleWhisk() {
-    whiskEnabled = !whiskEnabled;
-    const whiskImg = document.getElementById('whisk-img');
-    const status = document.getElementById('whisk-status');
-
-    if (whiskEnabled) {
-        whiskImg.classList.add("active");
-        status.innerText = "Whisk ON";
-    } else {
-        whiskImg.classList.remove("active");
-        status.innerText = "Whisk OFF";
-    }
-}
 
 function initCoffeeMaker() {
     const ingredientDiv = document.getElementById('ingredients');
@@ -32,6 +17,11 @@ function initCoffeeMaker() {
     });
     updateQuizButton();
     logUserAction('enter_page', 'coffeemaker');
+
+    const savedRecipes = localStorage.getItem('unlockedRecipes');
+    if (savedRecipes) {
+        unlockedRecipes = JSON.parse(savedRecipes);
+    }
 }
 
 function allowWorkspaceDrop(ev) {
@@ -40,7 +30,7 @@ function allowWorkspaceDrop(ev) {
 
 function dropToWorkspace(ev) {
     ev.preventDefault();
-    const ingredientName = ev.dataTransfer.getData("text/plain");
+    const ingredientName = ev.dataTransfer.getData("text");
     const workspace = document.getElementById('workspace-items');
 
     const ingredient = ingredients.find(i => i.name === ingredientName) || recipes.find(r => r.name === ingredientName);
@@ -78,7 +68,6 @@ function repositionInWorkspace(ev) {
     if (draggedElement && workspace.contains(draggedElement)) {
         workspace.appendChild(draggedElement);
         draggedElement = null;
-
         if (document.querySelectorAll('.workspace-item').length >= 2) {
             checkForRecipe();
         }
@@ -91,10 +80,7 @@ function checkForRecipe() {
 
     for (let recipe of recipes) {
         const comboMatch = recipe.combo.every(c => workspaceNames.includes(c));
-        const toolMatch = !recipe.tool || recipe.tool.every(t => {
-            if (t === "Whisk") return whiskEnabled;
-            else return workspaceNames.includes(t);
-        });
+        const toolMatch = !recipe.tool || recipe.tool.every(t => workspaceNames.includes(t));
 
         if (comboMatch && toolMatch) {
             const allUsed = recipe.combo.concat(recipe.tool || []);
@@ -143,6 +129,16 @@ function checkForRecipe() {
     }
 }
 
+function updateQuizButton() {
+    const btn = document.getElementById('quiz-btn');
+    if (unlockedRecipes.length >= 7) {
+        btn.disabled = false;
+        btn.innerText = "Quiz Me!";
+    } else {
+        btn.disabled = true;
+        btn.innerText = `Unlock ${7 - unlockedRecipes.length} more to start quiz`;
+    }
+}
 
 function logUserAction(action, details) {
     fetch('/log_action', {
@@ -156,66 +152,3 @@ function logUserAction(action, details) {
         }),
     });
 }
-
-function updateQuizButton() {
-    const btn = document.getElementById('quiz-btn');
-    if (unlockedRecipes.length >= unlockedAll) {
-        btn.disabled = false;
-        btn.innerText = "Quiz Me!";
-    } else {
-        btn.disabled = true;
-        btn.innerText = `Unlock ${unlockedAll - unlockedRecipes.length} more to start quiz`;
-    }
-}
-
-// quiz.js 
-
-function initDragDrop() {
-    const draggables = document.querySelectorAll('.draggable');
-    const milkTarget = document.getElementById('milk-target');
-
-    const scoreElement = document.getElementById('score');
-    let score = parseInt(document.body.dataset.score);
-    const correctDrag = document.body.dataset.correct;
-    const currentPage = parseInt(document.body.dataset.page);
-
-    // Set dragstart for all draggable images
-    draggables.forEach(item => {
-        item.addEventListener('dragstart', function (e) {
-            e.dataTransfer.setData("text/plain", item.dataset.name);
-        });
-    });
-
-    // Allow drop
-    milkTarget.addEventListener('dragover', function (e) {
-        e.preventDefault();
-    });
-
-    // Handle drop
-    milkTarget.addEventListener('drop', function (e) {
-        e.preventDefault();
-        const draggedName = e.dataTransfer.getData("text/plain");
-        console.log("Dropped:", draggedName, "Correct:", correctDrag);
-
-        if (draggedName === correctDrag) {
-            // Correct drop
-            alert("Correct drop!");
-            document.querySelector('.quiz-container').style.display = 'none';
-            document.getElementById('form-section').style.display = 'block';
-        } else {
-            // Incorrect drop - deduct point
-            score = Math.max(0, score - 1);
-            scoreElement.innerText = score;
-            alert("Incorrect! 1 point deducted.");
-        }
-    });
-
-    // Skip question button
-    window.skipQuestion = function () {
-        score = Math.max(0, score - 1);
-        scoreElement.innerText = score;
-        window.location.href = "/quiz/" + (currentPage + 1);
-    };
-}
-
-    

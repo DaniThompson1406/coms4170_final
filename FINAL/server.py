@@ -7,19 +7,30 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
 
-# Add this
+# Complete quizzables data with proper images and data
 quizzables = [
     { "name": "Macchiato", "qualifier": ["Espresso", "Steamed Milk"], "drag": "Espresso",
       "dosage": ["36g", "1oz"], "img": "https://images.immediate.co.uk/production/volatile/sites/2/2021/11/Macchiato-4cea4fd.png?quality=90&resize=556,505" },
-    { "name": "Matcha Latte", "qualifier": ["Matcha Powder", "Steamed Milk", "Hot Water"], "drag": "Matcha Tea",
-      "dosage": ["3g", "6oz", "2oz"], "img": "https://raw.githubusercontent.com/olivia-long127/coms4170_final/9e297d423cab1c01fadea5f7f92af61f5cc22507/FINAL/static/matcha.jpg" },
-    # ... add the rest of your items here
+    
+    { "name": "Matcha Latte", "qualifier": ["Matcha Tea", "Steamed Milk"], "drag": "Matcha Tea",
+      "dosage": ["3g", "6oz"], "img": "https://raw.githubusercontent.com/olivia-long127/coms4170_final/9e297d423cab1c01fadea5f7f92af61f5cc22507/FINAL/static/matcha.jpg" },
+    
+    { "name": "Latte", "qualifier": ["Espresso", "Steamed Milk"], "drag": "Espresso",
+      "dosage": ["36g", "4oz"], "img": "https://raw.githubusercontent.com/olivia-long127/coms4170_final/9e297d423cab1c01fadea5f7f92af61f5cc22507/FINAL/static/latte_lightest.jpg" },
+    
+    { "name": "Chai Latte", "qualifier": ["Chai Tea", "Steamed Milk"], "drag": "Chai Tea",
+      "dosage": ["3g", "6oz"], "img": "https://raw.githubusercontent.com/olivia-long127/coms4170_final/refs/heads/main/FINAL/static/chai_light.jpg" },
+    
+    { "name": "Hojicha Latte", "qualifier": ["Hojicha Tea", "Steamed Milk"], "drag": "Hojicha Tea",
+      "dosage": ["3g", "6oz"], "img": "https://raw.githubusercontent.com/olivia-long127/coms4170_final/9e297d423cab1c01fadea5f7f92af61f5cc22507/FINAL/static/hojicha_light.jpg" }
 ]
 
+# Updated quiz images to match recipes
 quiz_img = [
-    { "name": "Espresso", "img": "https://raw.githubusercontent.com/olivia-long127/coms4170_final/9e297d423cab1c01fadea5f7f92af61f5cc22507/FINAL/static/matcha.jpg" },
-    { "name": "Matcha Tea", "img": "https://raw.githubusercontent.com/olivia-long127/coms4170_final/9e297d423cab1c01fadea5f7f92af61f5cc22507/FINAL/static/matcha.jpg" },
-    # ... add the rest
+    { "name": "Espresso", "img": "https://raw.githubusercontent.com/olivia-long127/coms4170_final/refs/heads/main/FINAL/static/espresso.jpg" },
+    { "name": "Matcha Tea", "img": "https://raw.githubusercontent.com/olivia-long127/coms4170_final/refs/heads/main/FINAL/static/matcha_tea.jpg" },
+    { "name": "Chai Tea", "img": "https://raw.githubusercontent.com/olivia-long127/coms4170_final/refs/heads/main/FINAL/static/chai_tea.jpg" },
+    { "name": "Hojicha Tea", "img": "https://raw.githubusercontent.com/olivia-long127/coms4170_final/refs/heads/main/FINAL/static/hojicha_tea.jpg" }
 ]
 
 
@@ -39,23 +50,37 @@ def coffeemaker():
 
 @app.route('/quiz/<int:page>', methods=['GET', 'POST'])
 def quiz(page):
+    # Initialize score if not present
     if 'score' not in session:
-        session['score'] = len(quizzables)
-
+        session['score'] = 0
+    
+    # Check if we've completed all quizzes
     if page > len(quizzables):
-        return redirect(url_for('home'))
+        final_score = session['score']
+        session.clear()  # Clear session after quiz completion
+        return render_template('quiz_complete.html', score=final_score, max_score=len(quizzables)*2)
 
     quizzable = quizzables[page - 1]
 
     if request.method == 'POST':
         submitted_answers = [request.form.get(f'qualifier_{i}') for i in range(len(quizzable['qualifier']))]
+        
+        # Check if answers match expected dosages
         correct = all(submitted_answers[i] == quizzable['dosage'][i] for i in range(len(submitted_answers)))
 
         if correct:
             session['score'] += 1
         else:
-            session['score'] = max(0, session['score'] - 1)
+            session['score'] = max(0, session['score'] - 1)  # Don't go below 0
 
+        # Log the action
+        action_details = {
+            'page': page,
+            'answers': submitted_answers,
+            'correct': correct
+        }
+        log_quiz_answer(action_details)
+        
         return redirect(url_for('quiz', page=page + 1))
 
     return render_template('quiz.html',
@@ -64,7 +89,17 @@ def quiz(page):
                            page=page,
                            score=session['score'])
 
-
+def log_quiz_answer(details):
+    if 'actions' not in session:
+        session['actions'] = []
+    
+    timestamp = datetime.now().isoformat()
+    session['actions'].append({
+        'time': timestamp, 
+        'action': 'quiz_answer', 
+        'details': details
+    })
+    print(f"Quiz answer logged: {details}")
 
 @app.route('/recipes')
 def recipes():
@@ -85,6 +120,10 @@ def log_action():
     print(session['actions'])  # To see all stored actions
 
     return jsonify({'status': 'success'})
+
+@app.route('/quiz_complete')
+def quiz_complete():
+    return render_template('quiz_complete.html', score=session.get('score', 0), max_score=len(quizzables)*2)
 
 if __name__ == '__main__':
     app.run(debug=True)

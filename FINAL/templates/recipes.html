@@ -1,43 +1,223 @@
+<!-- Updated recipes.html with Kawaii Styles -->
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Unlocked Recipes</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-        <script src="{{ url_for('static', filename='data.js') }}"></script>
-        <script src="{{ url_for('static', filename='script.js') }}"></script>
-    </head>
-    
+<head>
+    <title>My Kawaii Recipe Book</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='data.js') }}"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            background-color: #FFF5F7;
+            font-family: "Comic Sans MS", "Comic Neue", cursive;
+            color: #FF6B8B;
+        }
+
+        .top-bar, .nav-button, .recipe-intro, h1, h2 {
+            background: #FFF0F5;
+            color: #FF6B8B;
+            border-color: #FFB6C1;
+        }
+
+        .top-bar {
+            border-bottom: 3px dashed #FFB6C1;
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, #FF8FA3, #FF6B8B);
+            color: white;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .nav-button:hover {
+            background: #FF6B8B;
+            transform: scale(1.05);
+        }
+
+        .recipe-card {
+            border: 2px solid #FFB6C1;
+            background: #FFFFFFDD;
+        }
+
+        .recipe-header h2, .recipe-intro h2 {
+            color: #FF6B8B;
+        }
+
+        .recipe-intro p {
+            color: #FF8FA3;
+        }
+
+        .cloud {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            opacity: 0.9;
+            animation: float 15s infinite ease-in-out;
+            z-index: 1;
+        }
+        .cloud-1 { width: 150px; height: 60px; top: 10%; left: 10%; animation-delay: 0s; }
+        .cloud-2 { width: 100px; height: 40px; top: 20%; right: 15%; animation-delay: 3s; }
+        .cloud-3 { width: 120px; height: 50px; bottom: 15%; left: 20%; animation-delay: 7s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); }
+            50% { transform: translateY(-20px) translateX(20px); }
+        }
+
+        .kawaii-coffee {
+            position: absolute;
+            font-size: 24px;
+            animation: fall 10s linear infinite;
+            opacity: 0.7;
+            z-index: 0;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
 <body onload="renderRecipes()">
-    <h1>Recipes You've Discovered</h1>
+    <div class="cloud cloud-1"></div>
+    <div class="cloud cloud-2"></div>
+    <div class="cloud cloud-3"></div>
+
+    <div class="top-bar">
+        <a href="{{ url_for('coffeemaker') }}" class="nav-button">Coffee Maker</a>
+        <h1>My Kawaii Recipe Book</h1>
+        <a href="{{ url_for('home') }}" class="nav-button">Home</a>
+    </div>
+
+    <div class="recipe-intro">
+        <h2>Recipes You've Discovered ♡</h2>
+        <p>Explore your adorable collection of drinks!</p>
+    </div>
+
     <div id="recipe-container" class="recipe-book"></div>
 
     <script>
         function renderRecipes() {
             const unlockedNames = JSON.parse(localStorage.getItem('unlockedRecipes')) || [];
             const container = document.getElementById('recipe-container');
-    
-            // Update the actual recipe objects based on stored unlocks
+
             unlockedNames.forEach(name => {
                 const match = recipes.find(r => r.name === name);
                 if (match) match.isUnlocked = true;
             });
-    
+
+            const recipeDetails = {
+                "Macchiato": {
+                    caffeine: "High",
+                    flavor: "Bold, intense with light milk sweetness"
+                },
+                "Matcha Latte": {
+                    caffeine: "Medium",
+                    flavor: "Earthy, grassy with creamy sweetness"
+                },
+                "Latte": {
+                    caffeine: "Medium",
+                    flavor: "Mild coffee with creamy, sweet milk"
+                },
+                "Cappuccino": {
+                    caffeine: "Medium-High",
+                    flavor: "Strong espresso with frothy, airy milk texture"
+                },
+                "Chai Latte": {
+                    caffeine: "Low-Medium",
+                    flavor: "Spicy, aromatic with creamy sweetness"
+                },
+                "Hojicha Latte": {
+                    caffeine: "Low",
+                    flavor: "Toasty, nutty with smooth creaminess"
+                },
+                "Flat White": {
+                    caffeine: "Medium-High",
+                    flavor: "Rich, velvety with micro-foam milk"
+                }
+            };
+
             recipes.forEach(recipe => {
                 if (recipe.hasRecipe && recipe.isUnlocked) {
                     const div = document.createElement('div');
                     div.className = 'recipe-card';
+
+                    const details = recipeDetails[recipe.name] || {
+                        caffeine: "Unknown",
+                        flavor: "Unique and delicious"
+                    };
+
+                    const caffeineStars = getCaffeineStars(details.caffeine);
                     const dosageLine = recipe.dosage.join(', ');
                     const steps = recipe.recipe ? recipe.recipe.map(step => `<li>${step}</li>`).join('') : '';
+
                     div.innerHTML = `
-                        <h2>${recipe.name}</h2>
-                        <p><strong>Dosage:</strong> ${dosageLine}</p>
-                        <ol>${steps}</ol>
+                        <div class="recipe-header">
+                            <h2>${recipe.name}</h2>
+                            <div class="caffeine-meter">
+                                <span>Caffeine: ${caffeineStars}</span>
+                            </div>
+                        </div>
+                        <div class="recipe-content">
+                            <div class="recipe-image">
+                                <img src="${recipe.img || 'https://raw.githubusercontent.com/olivia-long127/coms4170_final/9e297d423cab1c01fadea5f7f92af61f5cc22507/FINAL/static/latte_lightest.jpg'}" alt="${recipe.name}">
+                            </div>
+                            <div class="recipe-details">
+                                <p><strong>Flavor Profile:</strong> ${details.flavor}</p>
+                                <p><strong>Dosage:</strong> ${dosageLine}</p>
+                                <div class="recipe-steps">
+                                    <h3>How to Make:</h3>
+                                    <ol>${steps}</ol>
+                                </div>
+                            </div>
+                        </div>
                     `;
                     container.appendChild(div);
                 }
             });
         }
+
+        function getCaffeineStars(level) {
+            let stars = "";
+            switch(level) {
+                case "High": stars = "☕☕☕☕☕"; break;
+                case "Medium-High": stars = "☕☕☕☕"; break;
+                case "Medium": stars = "☕☕☕"; break;
+                case "Low-Medium": stars = "☕☕"; break;
+                case "Low": stars = "☕"; break;
+                default: stars = "☕☕";
+            }
+            return stars;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            createFallingElements();
+            setInterval(createFallingElements, 15000);
+        });
+
+        function createFallingElements() {
+            const emojis = ['☕', '🍵', '🧋', '🍰', '🥛', '✨'];
+            const container = document.body;
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const element = document.createElement('div');
+                    element.classList.add('kawaii-coffee');
+                    element.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                    element.style.left = `${Math.random() * 100}%`;
+                    element.style.animationDuration = `${Math.random() * 10 + 5}s`;
+                    element.style.animationDelay = `${Math.random() * 5}s`;
+                    element.style.fontSize = `${Math.random() * 20 + 20}px`;
+                    container.appendChild(element);
+                    setTimeout(() => {
+                        element.remove();
+                    }, 15000);
+                }, i * 800);
+            }
+        }
     </script>
-    
 </body>
 </html>
