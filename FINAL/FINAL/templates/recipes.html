@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Recipe Book</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='data.js') }}"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF6B8B;
+            --primary-light: #FF8FA3;
+            --secondary: #FFB6C1;
+            --background: #FFF5F7;
+            --card-bg: #FFFFFF;
+            --text: #5A4A5A;
+            --shadow: rgba(255, 107, 139, 0.2);
+        }
+        
+        body, html {
+            background-color: var(--background);
+            font-family: "Poppins", sans-serif;
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3 {
+            font-family: "Comic Neue", "Comic Sans MS", cursive;
+            color: var(--primary);
+        }
+
+        .top-bar {
+            background: white;
+            box-shadow: 0 4px 15px var(--shadow);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 3px dashed var(--secondary);
+        }
+        
+        .top-bar h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 0.7rem 1.2rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 3px 10px var(--shadow);
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 5px 15px var(--shadow);
+        }
+        
+        .nav-button:active {
+            transform: translateY(1px);
+        }
+
+        .recipe-intro {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin: 2rem auto;
+            max-width: 800px;
+            text-align: center;
+            box-shadow: 0 5px 20px var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .recipe-intro::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-light), var(--primary), var(--secondary));
+            border-radius: 5px 5px 0 0;
+        }
+
+        .recipe-intro h2 {
+            margin-top: 0.5rem;
+            font-size: 1.8rem;
+        }
+
+        .recipe-intro p {
+            color: var(--primary-light);
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .recipe-book {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 1rem 2rem 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .recipe-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 8px 20px var(--shadow);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .recipe-card::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-light), var(--primary));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px var(--shadow);
+        }
+        
+        .recipe-card:hover::after {
+            transform: scaleX(1);
+        }
+
+        .recipe-header {
+            padding: 1.2rem 1.5rem 0.8rem;
+            border-bottom: 2px dashed var(--secondary);
+            position: relative;
+        }
+
+        .recipe-header h2 {
+            margin: 0 0 0.5rem;
+            font-size: 1.5rem;
+        }
+
+        .caffeine-meter {
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+
+        .recipe-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .recipe-image {
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+        }
+
+        .recipe-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .recipe-card:hover .recipe-image img {
+            transform: scale(1.05);
+        }
+
+        .recipe-details {
+            padding: 1.2rem 1.5rem;
+        }
+
+        .recipe-details p {
+            margin: 0.7rem 0;
+            font-size: 0.95rem;
+        }
+
+        .recipe-steps {
+            margin-top: 1.2rem;
+        }
+
+        .recipe-steps h3 {
+            margin: 0 0 0.8rem;
+            font-size: 1.2rem;
+        }
+
+        .recipe-steps ol {
+            padding-left: 1.2rem;
+            margin: 0;
+        }
+
+        .recipe-steps li {
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+
+        .cloud {
+            position: fixed;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            opacity: 0.7;
+            pointer-events: none;
+            z-index: 1;
+            filter: blur(3px);
+        }
+        
+        .cloud-1 { width: 180px; height: 70px; top: 10%; left: 5%; animation: float 20s infinite ease-in-out; }
+        .cloud-2 { width: 120px; height: 50px; top: 15%; right: 7%; animation: float 25s infinite ease-in-out reverse; }
+        .cloud-3 { width: 150px; height: 60px; bottom: 20%; left: 10%; animation: float 22s infinite ease-in-out; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); }
+            25% { transform: translateY(-15px) translateX(15px); }
+            50% { transform: translateY(0) translateX(30px); }
+            75% { transform: translateY(15px) translateX(15px); }
+        }
+
+        .kawaii-coffee {
+            position: fixed;
+            font-size: 24px;
+            animation: fall 15s linear forwards;
+            opacity: 0.7;
+            z-index: 0;
+            pointer-events: none;
+            filter: drop-shadow(0 3px 5px rgba(0,0,0,0.1));
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-100vh) rotate(0deg) scale(0.7); opacity: 0; }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.7; }
+            100% { transform: translateY(100vh) rotate(360deg) scale(1.2); opacity: 0; }
+        }
+        
+        /* Loading animation */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--background);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            position: relative;
+        }
+        
+        .loading-spinner div {
+            position: absolute;
+            width: 64px;
+            height: 64px;
+            border: 8px solid transparent;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        }
+        
+        .loading-spinner div:nth-child(1) {
+            animation-delay: -0.45s;
+        }
+        
+        .loading-spinner div:nth-child(2) {
+            animation-delay: -0.3s;
+        }
+        
+        .loading-spinner div:nth-child(3) {
+            animation-delay: -0.15s;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Empty state for no recipes */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            margin: 2rem auto;
+            max-width: 500px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px var(--shadow);
+        }
+        
+        .empty-state h3 {
+            margin-top: 0;
+        }
+        
+        .empty-emoji {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .top-bar {
+                padding: 0.8rem;
+            }
+            
+            .top-bar h1 {
+                font-size: 1.4rem;
+            }
+            
+            .nav-button {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+            }
+            
+            .recipe-intro {
+                margin: 1.5rem 1rem;
+                padding: 1.2rem;
+            }
+            
+            .recipe-book {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                padding: 1rem;
+                gap: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+
+    <!-- Decorative elements -->
+    <div class="cloud cloud-1"></div>
+    <div class="cloud cloud-2"></div>
+    <div class="cloud cloud-3"></div>
+
+    <!-- Top navigation -->
+    <div class="top-bar">
+        <a href="{{ url_for('coffeemaker') }}" class="nav-button">Coffee Maker</a>
+        <h1>✨ My Recipe Book ✨</h1>
+        <a href="{{ url_for('home') }}" class="nav-button">Home</a>
+    </div>
+
+    <!-- Page introduction -->
+    <div class="recipe-intro">
+        <h2>Recipes ♡</h2>
+        <p>Explore your adorable collection of delicious drinks!</p>
+    </div>
+
+    <!-- Recipe container -->
+    <div id="recipe-container" class="recipe-book"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Remove loading overlay with slight delay for smooth transition
+            setTimeout(() => {
+                const loader = document.getElementById('loading-overlay');
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 500);
+            }, 800);
+            
+            // Start falling elements
+            createFallingElements();
+            setInterval(createFallingElements, 12000);
+        });
+
+        function renderRecipes() {
+            const unlockedNames = JSON.parse(localStorage.getItem('unlockedRecipes')) || [];
+            const container = document.getElementById('recipe-container');
+            container.innerHTML = ''; // Clear container first
+
+            // Find unlocked recipes
+            unlockedNames.forEach(name => {
+                const match = recipes.find(r => r.name === name);
+                if (match) match.isUnlocked = true;
+            });
+
+            const recipeDetails = {
+                "Macchiato": {
+                    caffeine: "High",
+                    flavor: "Bold, intense with light milk sweetness"
+                },
+                "Matcha Latte": {
+                    caffeine: "Medium",
+                    flavor: "Earthy, grassy with creamy sweetness"
+                },
+                "Latte": {
+                    caffeine: "Medium",
+                    flavor: "Mild coffee with creamy, sweet milk"
+                },
+                "Cappuccino": {
+                    caffeine: "Medium-High",
+                    flavor: "Strong espresso with frothy, airy milk texture"
+                },
+                "Chai Latte": {
+                    caffeine: "Low-Medium",
+                    flavor: "Spicy, aromatic with creamy sweetness"
+                },
+                "Hojicha Latte": {
+                    caffeine: "Low",
+                    flavor: "Toasty, nutty with smooth creaminess"
+                },
+                "Flat White": {
+                    caffeine: "Medium-High",
+                    flavor: "Rich, velvety with micro-foam milk"
+                }
+            };
+
+            // Filter recipes that are unlocked
+            const unlockedRecipes = recipes.filter(recipe => recipe.hasRecipe && recipe.isUnlocked);
+            
+            // Show empty state if no recipes
+            if (unlockedRecipes.length === 0) {
+                const emptyState = document.createElement('div');
+                emptyState.className = 'empty-state';
+                emptyState.innerHTML = `
+                    <div class="empty-emoji">🍵</div>
+                    <h3>No recipes discovered yet!</h3>
+                    <p>Head over to the Coffee Maker to discover new delicious drink recipes.</p>
+                `;
+                container.appendChild(emptyState);
+                return;
+            }
+
+            // Create recipe cards
+            unlockedRecipes.forEach(recipe => {
+                const div = document.createElement('div');
+                div.className = 'recipe-card';
+
+                const details = recipeDetails[recipe.name] || {
+                    caffeine: "Unknown",
+                    flavor: "Unique and delicious"
+                };
+
+                const caffeineStars = getCaffeineStars(details.caffeine);
+                const dosageLine = recipe.dosage.join(', ');
+                const steps = recipe.recipe ? recipe.recipe.map(step => `<li>${step}</li>`).join('') : '';
+
+                div.innerHTML = `
+                    <div class="recipe-header">
+                        <h2>${recipe.name}</h2>
+                        <div class="caffeine-meter">
+                            <span>Caffeine: ${caffeineStars}</span>
+                        </div>
+                    </div>
+                    <div class="recipe-content">
+                        <div class="recipe-image">
+                            <img src="${recipe.img || '{{ url_for("static", filename="latte_lightest.jpg") }}'}" alt="${recipe.name}">
+                        </div>
+                        <div class="recipe-details">
+                            <p><strong>Flavor Profile:</strong> ${details.flavor}</p>
+                            <p><strong>Dosage:</strong> ${dosageLine}</p>
+                            <div class="recipe-steps">
+                                <h3>How to Make:</h3>
+                                <ol>${steps}</ol>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function getCaffeineStars(level) {
+            let stars = "";
+            switch(level) {
+                case "High": stars = "☕☕☕☕☕"; break;
+                case "Medium-High": stars = "☕☕☕☕"; break;
+                case "Medium": stars = "☕☕☕"; break;
+                case "Low-Medium": stars = "☕☕"; break;
+                case "Low": stars = "☕"; break;
+                default: stars = "☕☕";
+            }
+            return stars;
+        }
+
+        function createFallingElements() {
+            const emojis = ['☕', '🍵', '🧋', '🍰', '🥛', '✨', '🫖', '🍮'];
+            const container = document.body;
+            
+            // Remove old elements to prevent buildup
+            const oldElements = document.querySelectorAll('.kawaii-coffee');
+            oldElements.forEach(el => {
+                if (el.getBoundingClientRect().top > window.innerHeight) {
+                    el.remove();
+                }
+            });
+            
+            // Create new elements
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    const element = document.createElement('div');
+                    element.classList.add('kawaii-coffee');
+                    element.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                    element.style.left = `${Math.random() * 100}%`;
+                    element.style.animationDuration = `${Math.random() * 10 + 10}s`;
+                    element.style.fontSize = `${Math.random() * 20 + 18}px`;
+                    container.appendChild(element);
+                    
+                    // Clean up after animation
+                    setTimeout(() => {
+                        element.remove();
+                    }, 20000);
+                }, i * 600);
+            }
+        }
+
+        // Initialize recipes on page load
+        window.onload = function() {
+            renderRecipes();
+        };
+    </script>
+</body>
+</html>
